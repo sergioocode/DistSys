@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>DistSys.Shared.Setup</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DistSys.Shared.Discovery\DistSys.Shared.Discovery.csproj" />
+    <ProjectReference Include="..\DistSys.Shared.EventSourcing\DistSys.Shared.EventSourcing.csproj" />
+    <ProjectReference Include="..\DistSys.Shared.Logging\DistSys.Shared.Logging.csproj" />
+    <ProjectReference Include="..\DistSys.Shared.Secrets\DistSys.Shared.Secrets.csproj" />
+    <ProjectReference Include="..\DistSys.Shared.Serialization\DistSys.Shared.Serialization.csproj" />
+    <ProjectReference Include="..\Shared.Communication\DistSys.Shared.Communication.RabbitMQ\DistSys.Shared.Communication.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Shared.Databases\DistSys.Shared.Databases.MySql\DistSys.Shared.Databases.MySql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="6.0.4" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="6.0.4" />
+    <PackageReference Include="Netmentor.ROP.ApiExtensions" Version="1.0.10" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.3.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.3.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.1" />
+    <PackageReference Include="Scrutor" Version="4.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+  
+  <Import Project="../../../GlobalSettings.msbuild" />
+</Project>
+

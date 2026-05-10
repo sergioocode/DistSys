@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!--    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
+        <RootNamespace>DistSys.Services.Products.BusinessLogic</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\DistSys.Shared.Setup\DistSys.Shared.Setup.csproj" />
+      <ProjectReference Include="..\DistSys.Services.Products.Dtos\DistSys.Services.Products.Dtos.csproj" />
+    </ItemGroup>
+
+</Project>
+
