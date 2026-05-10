@@ -4,7 +4,10 @@ namespace Distribt.Shared.Communication.Consumer.Handler;
 
 public interface IMessageHandlerRegistry
 {
-    IEnumerable<IMessageHandler> GetMessageHandlerForType(Type messageHandlerType, Type messageType);
+    IEnumerable<IMessageHandler> GetMessageHandlerForType(
+        Type messageHandlerType,
+        Type messageType
+    );
 }
 
 public class MessageHandlerRegistry : IMessageHandlerRegistry
@@ -19,7 +22,10 @@ public class MessageHandlerRegistry : IMessageHandlerRegistry
         _messageHandlers = messageHandlers;
     }
 
-    public IEnumerable<IMessageHandler> GetMessageHandlerForType(Type messageHandlerType, Type messageType)
+    public IEnumerable<IMessageHandler> GetMessageHandlerForType(
+        Type messageHandlerType,
+        Type messageType
+    )
     {
         var key = $"{messageHandlerType}-{messageType}";
         if (_cachedHandlers.TryGetValue(key, out var existingHandlers))
@@ -27,9 +33,11 @@ public class MessageHandlerRegistry : IMessageHandlerRegistry
             return existingHandlers;
         }
 
-        IList<IMessageHandler> handlers =
-            GetMessageHandlersInternal(messageHandlerType, messageType);
-            
+        IList<IMessageHandler> handlers = GetMessageHandlersInternal(
+            messageHandlerType,
+            messageType
+        );
+
         _cachedHandlers.AddOrUpdate(key, handlers.Distinct(), (_, __) => handlers);
         if (handlers.Count == 0)
         {
@@ -39,14 +47,14 @@ public class MessageHandlerRegistry : IMessageHandlerRegistry
         return handlers;
     }
 
-    private IList<IMessageHandler> GetMessageHandlersInternal(Type messageHandlerType, Type messageType)
+    private IList<IMessageHandler> GetMessageHandlersInternal(
+        Type messageHandlerType,
+        Type messageType
+    )
     {
-        return
-            _messageHandlers.Where(
-                    h => h.GetType()
-                        .GetInterfaces()
-                        .Contains(messageHandlerType))
-                .Distinct()
-                .ToList();
+        return _messageHandlers
+            .Where(h => h.GetType().GetInterfaces().Contains(messageHandlerType))
+            .Distinct()
+            .ToList();
     }
 }

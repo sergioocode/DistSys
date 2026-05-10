@@ -1,18 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <RootNamespace>DistSys.Shared.Databases.MongoDb</RootNamespace>
-    </PropertyGroup>
-    <ItemGroup>
-      <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="6.0.2" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-      <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\DistSys.Shared.Discovery\DistSys.Shared.Discovery.csproj" />
-      <ProjectReference Include="..\..\DistSys.Shared.Secrets\DistSys.Shared.Secrets.csproj" />
-    </ItemGroup>
-    
-    <Import Project="../../../../GlobalSettings.msbuild" />
-</Project>
+  <PropertyGroup>
+    <RootNamespace>DistSys.Shared.Databases.MongoDb</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="6.0.0"
+    />
+    <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DistSys.Shared.Discovery\DistSys.Shared.Discovery.csproj" />
+    <ProjectReference Include="..\..\DistSys.Shared.Secrets\DistSys.Shared.Secrets.csproj" />
+  </ItemGroup>
 
+  <Import Project="../../../../GlobalSettings.msbuild" />
+</Project>

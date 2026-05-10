@@ -12,7 +12,7 @@ public class ConsumerController<TMessage> : Controller
     {
         _consumerManager = consumerManager;
     }
-    
+
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Route("start")]

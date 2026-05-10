@@ -4,12 +4,15 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Distribt.Shared.Discovery;
 
-public record  DiscoveryData(string Server, int Port);
+public record DiscoveryData(string Server, int Port);
 
 public interface IServiceDiscovery
 {
     Task<string> GetFullAddress(string serviceKey, CancellationToken cancellationToken = default);
-    Task<DiscoveryData> GetDiscoveryData(string serviceKey, CancellationToken cancellationToken = default);
+    Task<DiscoveryData> GetDiscoveryData(
+        string serviceKey,
+        CancellationToken cancellationToken = default
+    );
 }
 
 public class ConsulServiceDiscovery : IServiceDiscovery
@@ -23,8 +26,10 @@ public class ConsulServiceDiscovery : IServiceDiscovery
         _cache = new MemoryCache(new MemoryCacheOptions());
     }
 
-
-    public async Task<string> GetFullAddress(string serviceKey, CancellationToken cancellationToken = default)
+    public async Task<string> GetFullAddress(
+        string serviceKey,
+        CancellationToken cancellationToken = default
+    )
     {
         if (_cache.TryGetValue(serviceKey, out DiscoveryData cachedData))
         {
@@ -35,23 +40,27 @@ public class ConsulServiceDiscovery : IServiceDiscovery
         return GetAddressFromData(data);
     }
 
-    public async Task<DiscoveryData> GetDiscoveryData(string serviceKey, CancellationToken cancellationToken = default)
+    public async Task<DiscoveryData> GetDiscoveryData(
+        string serviceKey,
+        CancellationToken cancellationToken = default
+    )
     {
         var services = await _client.Catalog.Service(serviceKey, cancellationToken);
         if (services.Response != null && services.Response.Any())
         {
             var service = services.Response.First();
 
-            DiscoveryData data= new DiscoveryData(service.ServiceAddress, service.ServicePort);
-            
+            DiscoveryData data = new DiscoveryData(service.ServiceAddress, service.ServicePort);
+
             AddToCache(serviceKey, data);
 
             return data;
         }
 
-        throw new ArgumentException($"seems like the service your are trying to access ({serviceKey}) does not exist ");
+        throw new ArgumentException(
+            $"seems like the service your are trying to access ({serviceKey}) does not exist "
+        );
     }
-
 
     private string GetAddressFromData(DiscoveryData data)
     {
@@ -63,15 +72,12 @@ public class ConsulServiceDiscovery : IServiceDiscovery
         }
 
         string serviceAddressString = serviceAddress.ToString();
-            
-       
+
         return serviceAddressString;
     }
-    
 
     private void AddToCache(string serviceKey, DiscoveryData serviceAddress)
     {
         _cache.Set(serviceKey, serviceAddress);
     }
 }
-

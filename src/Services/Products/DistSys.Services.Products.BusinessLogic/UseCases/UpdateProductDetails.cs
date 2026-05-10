@@ -14,7 +14,10 @@ public class UpdateProductDetails : IUpdateProductDetails
     private readonly IProductsWriteStore _writeStore;
     private readonly IDomainMessagePublisher _domainMessagePublisher;
 
-    public UpdateProductDetails(IProductsWriteStore writeStore, IDomainMessagePublisher domainMessagePublisher)
+    public UpdateProductDetails(
+        IProductsWriteStore writeStore,
+        IDomainMessagePublisher domainMessagePublisher
+    )
     {
         _writeStore = writeStore;
         _domainMessagePublisher = domainMessagePublisher;
@@ -24,8 +27,11 @@ public class UpdateProductDetails : IUpdateProductDetails
     {
         await _writeStore.UpdateProduct(id, productDetails);
 
-        await _domainMessagePublisher.Publish(new ProductUpdated(id, productDetails), routingKey: "internal");
-        
+        await _domainMessagePublisher.Publish(
+            new ProductUpdated(id, productDetails),
+            routingKey: "internal"
+        );
+
         return true;
     }
 }

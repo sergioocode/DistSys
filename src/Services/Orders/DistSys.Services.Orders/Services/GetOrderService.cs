@@ -8,7 +8,10 @@ namespace Distribt.Services.Orders.Services;
 
 public interface IGetOrderService
 {
-    Task<Result<OrderResponse>> Execute(Guid orderId, CancellationToken cancellationToken = default(CancellationToken));
+    Task<Result<OrderResponse>> Execute(
+        Guid orderId,
+        CancellationToken cancellationToken = default(CancellationToken)
+    );
 }
 
 public class GetOrderService : IGetOrderService
@@ -22,33 +25,48 @@ public class GetOrderService : IGetOrderService
         _productNameService = productNameService;
     }
 
-
-    public async Task<Result<OrderResponse>> Execute(Guid orderId,
-        CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<Result<OrderResponse>> Execute(
+        Guid orderId,
+        CancellationToken cancellationToken = default(CancellationToken)
+    )
     {
         return await GetOrderDetails(orderId, cancellationToken)
             .Bind(x => MapToOrderResponse(x, cancellationToken));
     }
 
-    private async Task<Result<OrderDetails>> GetOrderDetails(Guid orderId,
-        CancellationToken cancellationToken = default(CancellationToken))
+    private async Task<Result<OrderDetails>> GetOrderDetails(
+        Guid orderId,
+        CancellationToken cancellationToken = default(CancellationToken)
+    )
     {
-        OrderDetails? orderDetails = await _orderRepository.GetByIdOrDefault(orderId, cancellationToken);
+        OrderDetails? orderDetails = await _orderRepository.GetByIdOrDefault(
+            orderId,
+            cancellationToken
+        );
         if (orderDetails == null)
             return Result.NotFound<OrderDetails>($"Order {orderId} not found");
 
         return orderDetails;
     }
 
-    private async Task<Result<OrderResponse>> MapToOrderResponse(OrderDetails orderDetails,
-        CancellationToken cancellationToken = default(CancellationToken))
+    private async Task<Result<OrderResponse>> MapToOrderResponse(
+        OrderDetails orderDetails,
+        CancellationToken cancellationToken = default(CancellationToken)
+    )
     {
-        //SelectAsync is a custom method, go to the source code to check it out 
-        var products = await orderDetails.Products
-            .SelectAsync(async p => new ProductQuantityName(p.ProductId, p.Quantity,
-                await _productNameService.GetProductName(p.ProductId, cancellationToken)));
+        //SelectAsync is a custom method, go to the source code to check it out
+        var products = await orderDetails.Products.SelectAsync(async p => new ProductQuantityName(
+            p.ProductId,
+            p.Quantity,
+            await _productNameService.GetProductName(p.ProductId, cancellationToken)
+        ));
 
-        return new OrderResponse(orderDetails.Id, orderDetails.Status.ToString(), orderDetails.Delivery,
-            orderDetails.PaymentInformation, products.ToList());
+        return new OrderResponse(
+            orderDetails.Id,
+            orderDetails.Status.ToString(),
+            orderDetails.Delivery,
+            orderDetails.PaymentInformation,
+            products.ToList()
+        );
     }
 }

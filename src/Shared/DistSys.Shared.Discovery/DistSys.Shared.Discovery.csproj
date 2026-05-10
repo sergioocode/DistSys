@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <RootNamespace>DistSys.Shared.Discovery</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>DistSys.Shared.Discovery</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Consul" Version="1.6.10.3" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
-    </ItemGroup>
-    
-    <Import Project="../../../GlobalSettings.msbuild" />
+  <ItemGroup>
+    <PackageReference Include="Consul" Version="1.6.10.3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="3.1.3"
+    />
+  </ItemGroup>
+
+  <Import Project="../../../GlobalSettings.msbuild" />
 </Project>
-

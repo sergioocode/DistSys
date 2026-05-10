@@ -7,7 +7,6 @@ namespace Distribt.Test.Shared.Discovery.Tests;
 
 public class ConsulServiceDiscoveryTest
 {
-
     [Fact]
     public void WhenGetFullAddressEmpty_Then_Throws()
     {
@@ -16,18 +15,14 @@ public class ConsulServiceDiscoveryTest
 
         var services = new QueryResult<CatalogService[]>()
         {
-            Response = Array.Empty<CatalogService>()
+            Response = Array.Empty<CatalogService>(),
         };
 
         var mockCatalogEndpoint = new Mock<ICatalogEndpoint>();
-        mockCatalogEndpoint
-            .Setup(x => x.Service(serviceKey, default))
-            .ReturnsAsync(services);
+        mockCatalogEndpoint.Setup(x => x.Service(serviceKey, default)).ReturnsAsync(services);
 
         var mockClient = new Mock<IConsulClient>();
-        mockClient
-            .Setup(x => x.Catalog)
-            .Returns(mockCatalogEndpoint.Object);
+        mockClient.Setup(x => x.Catalog).Returns(mockCatalogEndpoint.Object);
 
         var service = new ConsulServiceDiscovery(mockClient.Object);
 
@@ -47,24 +42,17 @@ public class ConsulServiceDiscoveryTest
         var serviceAddress = "http:test.com/fake";
         var services = new QueryResult<CatalogService[]>()
         {
-            Response = new[] {
-                new CatalogService()
-                {
-                    ServiceAddress = serviceAddress,
-                    ServicePort = servicePort
-                }
-            }
+            Response = new[]
+            {
+                new CatalogService() { ServiceAddress = serviceAddress, ServicePort = servicePort },
+            },
         };
 
         var mockCatalogEndpoint = new Mock<ICatalogEndpoint>();
-        mockCatalogEndpoint
-            .Setup(x => x.Service(serviceKey, default))
-            .ReturnsAsync(services);
+        mockCatalogEndpoint.Setup(x => x.Service(serviceKey, default)).ReturnsAsync(services);
 
         var mockClient = new Mock<IConsulClient>();
-        mockClient
-            .Setup(x => x.Catalog)
-            .Returns(mockCatalogEndpoint.Object);
+        mockClient.Setup(x => x.Catalog).Returns(mockCatalogEndpoint.Object);
 
         var service = new ConsulServiceDiscovery(mockClient.Object);
 
@@ -84,24 +72,17 @@ public class ConsulServiceDiscoveryTest
         var serviceAddress = "http:test.com/fake";
         var services = new QueryResult<CatalogService[]>()
         {
-            Response = new[] {
-                new CatalogService()
-                {
-                    ServiceAddress = serviceAddress,
-                    ServicePort = servicePort
-                }
-            }
+            Response = new[]
+            {
+                new CatalogService() { ServiceAddress = serviceAddress, ServicePort = servicePort },
+            },
         };
 
         var mockCatalogEndpoint = new Mock<ICatalogEndpoint>();
-        mockCatalogEndpoint
-            .Setup(x => x.Service(serviceKey, default))
-            .ReturnsAsync(services);
+        mockCatalogEndpoint.Setup(x => x.Service(serviceKey, default)).ReturnsAsync(services);
 
         var mockClient = new Mock<IConsulClient>();
-        mockClient
-            .Setup(x => x.Catalog)
-            .Returns(mockCatalogEndpoint.Object);
+        mockClient.Setup(x => x.Catalog).Returns(mockCatalogEndpoint.Object);
 
         var service = new ConsulServiceDiscovery(mockClient.Object);
 
@@ -121,24 +102,17 @@ public class ConsulServiceDiscoveryTest
         var serviceAddress = "http:test.com/fake";
         var services = new QueryResult<CatalogService[]>()
         {
-            Response = new[] {
-                new CatalogService()
-                {
-                    ServiceAddress = serviceAddress,
-                    ServicePort = servicePort
-                }
-            }
+            Response = new[]
+            {
+                new CatalogService() { ServiceAddress = serviceAddress, ServicePort = servicePort },
+            },
         };
 
         var mockCatalogEndpoint = new Mock<ICatalogEndpoint>();
-        mockCatalogEndpoint
-            .Setup(x => x.Service(serviceKey, default))
-            .ReturnsAsync(services);
+        mockCatalogEndpoint.Setup(x => x.Service(serviceKey, default)).ReturnsAsync(services);
 
         var mockClient = new Mock<IConsulClient>();
-        mockClient
-            .Setup(x => x.Catalog)
-            .Returns(mockCatalogEndpoint.Object);
+        mockClient.Setup(x => x.Catalog).Returns(mockCatalogEndpoint.Object);
 
         var service = new ConsulServiceDiscovery(mockClient.Object);
 
@@ -147,7 +121,6 @@ public class ConsulServiceDiscoveryTest
         await service.GetFullAddress(serviceKey);
 
         // assert
-        mockCatalogEndpoint
-            .Verify(x => x.Service(serviceKey, default), Times.Once);
+        mockCatalogEndpoint.Verify(x => x.Service(serviceKey, default), Times.Once);
     }
 }

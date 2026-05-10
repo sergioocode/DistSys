@@ -8,12 +8,20 @@ namespace Distribt.Shared.Logging;
 
 public static class ConfigureLogger
 {
-    public static IHostBuilder ConfigureSerilog(this IHostBuilder builder, IServiceDiscovery discovery)
-        => builder.UseSerilog((context, loggerConfiguration)
-            => ConfigureSerilogLogger(loggerConfiguration, context.Configuration, discovery));
+    public static IHostBuilder ConfigureSerilog(
+        this IHostBuilder builder,
+        IServiceDiscovery discovery
+    ) =>
+        builder.UseSerilog(
+            (context, loggerConfiguration) =>
+                ConfigureSerilogLogger(loggerConfiguration, context.Configuration, discovery)
+        );
 
-    private static LoggerConfiguration ConfigureSerilogLogger(LoggerConfiguration loggerConfiguration,
-        IConfiguration configuration, IServiceDiscovery discovery)
+    private static LoggerConfiguration ConfigureSerilogLogger(
+        LoggerConfiguration loggerConfiguration,
+        IConfiguration configuration,
+        IServiceDiscovery discovery
+    )
     {
         GraylogLoggerConfiguration graylogLogger = new GraylogLoggerConfiguration();
         configuration.GetSection("Logging:Graylog").Bind(graylogLogger);
@@ -23,8 +31,6 @@ public static class ConfigureLogger
         ConsoleLoggerConfiguration consoleLogger = new ConsoleLoggerConfiguration();
         configuration.GetSection("Logging:Console").Bind(consoleLogger);
 
-        return loggerConfiguration
-                .AddConsoleLogger(consoleLogger)
-                .AddGraylogLogger(graylogLogger);
+        return loggerConfiguration.AddConsoleLogger(consoleLogger).AddGraylogLogger(graylogLogger);
     }
 }

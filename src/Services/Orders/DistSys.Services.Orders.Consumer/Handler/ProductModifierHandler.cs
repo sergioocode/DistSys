@@ -12,8 +12,15 @@ public class ProductModifierHandler : IIntegrationMessageHandler<ProductUpdated>
         _productNameService = productNameService;
     }
 
-    public async Task Handle(IntegrationMessage<ProductUpdated> message, CancellationToken cancelToken = default(CancellationToken))
+    public async Task Handle(
+        IntegrationMessage<ProductUpdated> message,
+        CancellationToken cancelToken = default(CancellationToken)
+    )
     {
-        await _productNameService.SetProductName(message.Content.ProductId, message.Content.Details.Name, cancelToken);
+        await _productNameService.SetProductName(
+            message.Content.ProductId,
+            message.Content.Details.Name,
+            cancelToken
+        );
     }
 }

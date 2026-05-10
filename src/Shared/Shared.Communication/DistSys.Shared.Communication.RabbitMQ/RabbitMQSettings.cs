@@ -18,7 +18,7 @@ public class RabbitMQSettings
     {
         Hostname = hostname;
     }
- }
+}
 
 public record RabbitMQCredentials
 {

@@ -8,12 +8,20 @@ namespace Distribt.Shared.EventSourcing;
 
 public static class EventSourcingDependencyInjection
 {
-    public static void AddMongoEventSourcing(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddMongoEventSourcing(
+        this IServiceCollection serviceCollection,
+        IConfiguration configuration
+    )
     {
         //TODO: probably here it should be the addmongodb thingy
-        serviceCollection.AddTransient(typeof(IAggregateRepository<>), typeof(AggregateRepository<>));
+        serviceCollection.AddTransient(
+            typeof(IAggregateRepository<>),
+            typeof(AggregateRepository<>)
+        );
         serviceCollection.AddTransient<IEventStore, EventStore>();
         serviceCollection.AddTransient<IEventStoreManager, MongoEventStoreManager>();
-        serviceCollection.Configure<MongoEventStoreConfiguration>(configuration.GetSection("EventSourcing"));
+        serviceCollection.Configure<MongoEventStoreConfiguration>(
+            configuration.GetSection("EventSourcing")
+        );
     }
 }

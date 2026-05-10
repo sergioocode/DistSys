@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -20,4 +19,3 @@
     <ProjectReference Include="..\DistSys.Shared.Serialization\DistSys.Shared.Serialization.csproj" />
   </ItemGroup>
 </Project>
-

@@ -8,7 +8,6 @@ namespace Distribt.Services.Products.Consumer.Controllers;
 [Route("[controller]")]
 public class DomainConsumerController : ConsumerController<DomainMessage>
 {
-    public DomainConsumerController(IConsumerManager<DomainMessage> consumerManager) : base(consumerManager)
-    {
-    }
+    public DomainConsumerController(IConsumerManager<DomainMessage> consumerManager)
+        : base(consumerManager) { }
 }

@@ -6,6 +6,7 @@ public interface IMessage
     /// Must be unique;
     /// </summary>
     public string MessageIdentifier { get; }
+
     /// <summary>
     /// Name for the message, useful in logs/databases, etc
     /// </summary>

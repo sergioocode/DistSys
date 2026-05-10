@@ -8,18 +8,30 @@ public class ProductUpdatedHandler : IDomainMessageHandler<ProductUpdated>
     private readonly IProductsReadStore _readStore;
     private readonly IIntegrationMessagePublisher _integrationMessagePublisher;
 
-    public ProductUpdatedHandler(IProductsReadStore readStore, IIntegrationMessagePublisher integrationMessagePublisher)
+    public ProductUpdatedHandler(
+        IProductsReadStore readStore,
+        IIntegrationMessagePublisher integrationMessagePublisher
+    )
     {
         _readStore = readStore;
         _integrationMessagePublisher = integrationMessagePublisher;
     }
 
-    public async Task Handle(DomainMessage<ProductUpdated> message, CancellationToken cancelToken = default(CancellationToken))
+    public async Task Handle(
+        DomainMessage<ProductUpdated> message,
+        CancellationToken cancelToken = default(CancellationToken)
+    )
     {
-
-        await _readStore.UpsertProductViewDetails(message.Content.ProductId, message.Content.Details, cancelToken);
+        await _readStore.UpsertProductViewDetails(
+            message.Content.ProductId,
+            message.Content.Details,
+            cancelToken
+        );
 
         await _integrationMessagePublisher.Publish(
-            new ProductUpdated(message.Content.ProductId, message.Content.Details), routingKey:"external", cancellationToken: cancelToken);
+            new ProductUpdated(message.Content.ProductId, message.Content.Details),
+            routingKey: "external",
+            cancellationToken: cancelToken
+        );
     }
 }

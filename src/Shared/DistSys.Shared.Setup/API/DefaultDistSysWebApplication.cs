@@ -6,12 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-
 namespace Distribt.Shared.Setup.API;
 
 public static class DefaultDistribtWebApplication
 {
-    public static WebApplication Create(string[] args, Action<WebApplicationBuilder>? webappBuilder = null)
+    public static WebApplication Create(
+        string[] args,
+        Action<WebApplicationBuilder>? webappBuilder = null
+    )
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +31,10 @@ public static class DefaultDistribtWebApplication
         builder.Services.AddLogging(logger => logger.AddSerilog());
         builder.Services.AddTracing(builder.Configuration);
         builder.Services.AddMetrics(builder.Configuration);
-        
-        builder.Host.ConfigureSerilog(builder.Services.BuildServiceProvider().GetRequiredService<IServiceDiscovery>());
+
+        builder.Host.ConfigureSerilog(
+            builder.Services.BuildServiceProvider().GetRequiredService<IServiceDiscovery>()
+        );
 
         if (webappBuilder != null)
         {
@@ -50,17 +54,19 @@ public static class DefaultDistribtWebApplication
 
         webApp.MapHealthChecks("/health");
 
-        webApp.UseHealthChecks("/health", new HealthCheckOptions()
-        {
-            Predicate = _ => true,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-        
+        webApp.UseHealthChecks(
+            "/health",
+            new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            }
+        );
+
         webApp.UseHealthChecksUI(config =>
         {
-            config.UIPath = "/health-ui";            
+            config.UIPath = "/health-ui";
         });
-
 
         webApp.UseHttpsRedirection();
         webApp.UseAuthorization();

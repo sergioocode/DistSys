@@ -11,7 +11,10 @@ public class ConsumerHostedService<TMessage> : IHostedService
         new CancellationTokenSource();
     private Task? _executingTask;
 
-    public ConsumerHostedService(IConsumerManager<TMessage> consumerManager, IMessageConsumer<TMessage> messageConsumer)
+    public ConsumerHostedService(
+        IConsumerManager<TMessage> consumerManager,
+        IMessageConsumer<TMessage> messageConsumer
+    )
     {
         _consumerManager = consumerManager;
         _messageConsumer = messageConsumer;
@@ -21,14 +24,14 @@ public class ConsumerHostedService<TMessage> : IHostedService
     {
         _executingTask = ConsumeMessages(_stoppingCancellationTokenSource.Token);
 
-        return _executingTask.IsCompleted ? _executingTask : Task.CompletedTask;    
+        return _executingTask.IsCompleted ? _executingTask : Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _stoppingCancellationTokenSource.Cancel();
         _consumerManager.StopExecution();
-        return  Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     private async Task ConsumeMessages(CancellationToken cancellationToken)
@@ -36,11 +39,13 @@ public class ConsumerHostedService<TMessage> : IHostedService
         while (!cancellationToken.IsCancellationRequested)
         {
             var ct = _consumerManager.GetCancellationToken();
-            if (ct.IsCancellationRequested) break;
+            if (ct.IsCancellationRequested)
+                break;
             try
             {
                 await _messageConsumer.StartAsync(cancellationToken);
-            }catch (OperationCanceledException)
+            }
+            catch (OperationCanceledException)
             {
                 // ignore, the operation is getting cancelled
             }
@@ -48,4 +53,3 @@ public class ConsumerHostedService<TMessage> : IHostedService
         }
     }
 }
-

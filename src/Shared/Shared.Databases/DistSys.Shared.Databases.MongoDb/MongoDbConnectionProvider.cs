@@ -18,12 +18,14 @@ public class MongoDbConnectionProvider : IMongoDbConnectionProvider
     private MongoUrl? MongoUrl { get; set; }
     private string? MongoConnectionString { get; set; }
 
-    public MongoDbConnectionProvider(ISecretManager secretManager, IServiceDiscovery serviceDiscovery)
+    public MongoDbConnectionProvider(
+        ISecretManager secretManager,
+        IServiceDiscovery serviceDiscovery
+    )
     {
         _secretManager = secretManager;
         _serviceDiscovery = serviceDiscovery;
     }
-
 
     public MongoUrl GetMongoUrl()
     {
@@ -41,17 +43,19 @@ public class MongoDbConnectionProvider : IMongoDbConnectionProvider
         if (MongoConnectionString is null)
             GetMongoUrl();
 
-        return MongoConnectionString ?? throw new Exception("Mongo connection string cannot be retrieved");
+        return MongoConnectionString
+            ?? throw new Exception("Mongo connection string cannot be retrieved");
     }
 
     private async Task<string> RetrieveMongoUrl()
     {
-        DiscoveryData mongoData = await _serviceDiscovery.GetDiscoveryData(DiscoveryServices.MongoDb);
+        DiscoveryData mongoData = await _serviceDiscovery.GetDiscoveryData(
+            DiscoveryServices.MongoDb
+        );
         MongoDbCredentials credentials = await _secretManager.Get<MongoDbCredentials>("mongodb");
 
         return $"mongodb://{credentials.username}:{credentials.password}@{mongoData.Server}:{mongoData.Port}";
     }
-
 
     private record MongoDbCredentials
     {

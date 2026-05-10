@@ -13,7 +13,7 @@ public static class AggregateMappers
             false
         );
     }
-    
+
     public static AggregateChangeDto ToTypedAggregateChangeDto(
         Guid Id,
         string aggregateType,

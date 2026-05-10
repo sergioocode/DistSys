@@ -4,6 +4,7 @@ public record IntegrationMessage : IMessage
 {
     public string MessageIdentifier { get; }
     public string Name { get; }
+
     public IntegrationMessage(string messageIdentifier, string name)
     {
         MessageIdentifier = messageIdentifier;

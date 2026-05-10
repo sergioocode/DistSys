@@ -2,7 +2,6 @@ using Distribt.Shared.EventSourcing.Extensions;
 
 namespace Distribt.Shared.EventSourcing;
 
-
 public class Aggregate
 {
     private List<AggregateChange> _changes = new List<AggregateChange>();
@@ -10,7 +9,7 @@ public class Aggregate
 
     private string AggregateType => GetType().Name;
     public int Version { get; set; } = 0;
-    
+
     /// <summary>
     /// this flag is used to identify when an event is being loaded from the DB
     /// or when the event is being created as new
@@ -30,7 +29,7 @@ public class Aggregate
 
     public List<AggregateChange> GetUncommittedChanges()
     {
-        return _changes.Where(a=>a.IsNew).ToList();
+        return _changes.Where(a => a.IsNew).ToList();
     }
 
     public void MarkChangesAsCommitted()
@@ -54,9 +53,7 @@ public class Aggregate
             ReadingFromHistory != true
         );
         _changes.Add(change);
-       
     }
-
 
     public void LoadFromHistory(IList<AggregateChange> history)
     {
@@ -72,12 +69,11 @@ public class Aggregate
         }
         ReadingFromHistory = false;
 
-       Version = history.Last().Version;
-        
+        Version = history.Last().Version;
+
         void ApplyChanges<T>(T eventObject)
         {
             this.AsDynamic()!.Apply(eventObject);
         }
     }
 }
-

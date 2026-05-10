@@ -1,7 +1,10 @@
-WebApplication app = DefaultDistribtWebApplication.Create(args, webappBuilder =>
-{
-    webappBuilder.Services.AddServiceBusIntegrationPublisher(webappBuilder.Configuration);
-});
+WebApplication app = DefaultDistribtWebApplication.Create(
+    args,
+    webappBuilder =>
+    {
+        webappBuilder.Services.AddServiceBusIntegrationPublisher(webappBuilder.Configuration);
+    }
+);
 
 DefaultDistribtWebApplication.Run(app);
 

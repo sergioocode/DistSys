@@ -9,7 +9,8 @@ namespace Distribt.Shared.Secrets;
 
 public interface ISecretManager
 {
-    Task<T> Get<T>(string path) where T : new();
+    Task<T> Get<T>(string path)
+        where T : new();
     Task<UsernamePasswordCredentials> GetRabbitMQCredentials(string roleName);
 }
 
@@ -22,14 +23,20 @@ internal class VaultSecretManager : ISecretManager
         _vaultSettings = vaultSettings.Value with { TokenApi = GetTokenFromEnvironmentVariable() };
     }
 
-    public async Task<T> Get<T>(string path) 
+    public async Task<T> Get<T>(string path)
         where T : new()
     {
-        VaultClient client = new VaultClient(new VaultClientSettings(_vaultSettings.VaultUrl,
-            new TokenAuthMethodInfo(_vaultSettings.TokenApi)));
+        VaultClient client = new VaultClient(
+            new VaultClientSettings(
+                _vaultSettings.VaultUrl,
+                new TokenAuthMethodInfo(_vaultSettings.TokenApi)
+            )
+        );
 
-        Secret<SecretData> kv2Secret = await client.V1.Secrets.KeyValue.V2
-            .ReadSecretAsync(path: path, mountPoint: "secret");
+        Secret<SecretData> kv2Secret = await client.V1.Secrets.KeyValue.V2.ReadSecretAsync(
+            path: path,
+            mountPoint: "secret"
+        );
         var returnedData = kv2Secret.Data.Data;
 
         return returnedData.ToObject<T>();
@@ -37,15 +44,19 @@ internal class VaultSecretManager : ISecretManager
 
     public async Task<UsernamePasswordCredentials> GetRabbitMQCredentials(string roleName)
     {
-        VaultClient client = new VaultClient(new VaultClientSettings(_vaultSettings.VaultUrl,
-            new TokenAuthMethodInfo(_vaultSettings.TokenApi)));
+        VaultClient client = new VaultClient(
+            new VaultClientSettings(
+                _vaultSettings.VaultUrl,
+                new TokenAuthMethodInfo(_vaultSettings.TokenApi)
+            )
+        );
 
-        Secret<UsernamePasswordCredentials> secret = await client.V1.Secrets.RabbitMQ
-            .GetCredentialsAsync(roleName, "rabbitmq");
+        Secret<UsernamePasswordCredentials> secret =
+            await client.V1.Secrets.RabbitMQ.GetCredentialsAsync(roleName, "rabbitmq");
         return secret.Data;
     }
 
-    private string GetTokenFromEnvironmentVariable()
-        => Environment.GetEnvironmentVariable("VAULT-TOKEN") 
-           ?? throw new NotImplementedException("please specify the VAULT-TOKEN env_var");
+    private string GetTokenFromEnvironmentVariable() =>
+        Environment.GetEnvironmentVariable("VAULT-TOKEN")
+        ?? throw new NotImplementedException("please specify the VAULT-TOKEN env_var");
 }

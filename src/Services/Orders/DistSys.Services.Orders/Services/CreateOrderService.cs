@@ -10,8 +10,10 @@ namespace Distribt.Services.Orders.Services;
 
 public interface ICreateOrderService
 {
-    Task<Result<CreateOrderResponse>> Execute(CreateOrderRequest createOrder,
-        CancellationToken cancellationToken = default(CancellationToken));
+    Task<Result<CreateOrderResponse>> Execute(
+        CreateOrderRequest createOrder,
+        CancellationToken cancellationToken = default(CancellationToken)
+    );
 }
 
 public class CreateOrderService : ICreateOrderService
@@ -20,26 +22,29 @@ public class CreateOrderService : ICreateOrderService
     private readonly IDomainMessagePublisher _domainMessagePublisher;
     private readonly IProductNameService _productNameService;
 
-    public CreateOrderService(IOrderRepository orderRepository, IDomainMessagePublisher domainMessagePublisher,
-        IProductNameService productNameService)
+    public CreateOrderService(
+        IOrderRepository orderRepository,
+        IDomainMessagePublisher domainMessagePublisher,
+        IProductNameService productNameService
+    )
     {
         _orderRepository = orderRepository;
         _domainMessagePublisher = domainMessagePublisher;
         _productNameService = productNameService;
     }
 
-
-    public async Task<Result<CreateOrderResponse>> Execute(CreateOrderRequest createOrder,
-        CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<Result<CreateOrderResponse>> Execute(
+        CreateOrderRequest createOrder,
+        CancellationToken cancellationToken = default(CancellationToken)
+    )
     {
         return await CreateOrder(createOrder)
             .Async()
             //On a real scenario:
             //validate orders
-            .Bind(x=> ValidateFraudCheck(x, cancellationToken))
+            .Bind(x => ValidateFraudCheck(x, cancellationToken))
             .Bind(x => SaveOrder(x, cancellationToken))
-            .Then(x => MapToOrderResponse(x)
-                .Bind(PublishDomainEvent))
+            .Then(x => MapToOrderResponse(x).Bind(PublishDomainEvent))
             .Map(x => new CreateOrderResponse(x.Id, $"order/getorderstatus/{x.Id}"));
     }
 
@@ -48,13 +53,21 @@ public class CreateOrderService : ICreateOrderService
         Guid createdOrderId = Guid.NewGuid();
 
         OrderDetails orderDetails = new OrderDetails(createdOrderId);
-        orderDetails.Apply(new OrderCreated(createOrder.DeliveryDetails, createOrder.PaymentInformation,
-            createOrder.Products));
+        orderDetails.Apply(
+            new OrderCreated(
+                createOrder.DeliveryDetails,
+                createOrder.PaymentInformation,
+                createOrder.Products
+            )
+        );
 
         return orderDetails;
     }
 
-    private async Task<Result<OrderDetails>> SaveOrder(OrderDetails orderDetails, CancellationToken cancellationToken)
+    private async Task<Result<OrderDetails>> SaveOrder(
+        OrderDetails orderDetails,
+        CancellationToken cancellationToken
+    )
     {
         await _orderRepository.Save(orderDetails, cancellationToken);
         return orderDetails;
@@ -62,13 +75,19 @@ public class CreateOrderService : ICreateOrderService
 
     private async Task<Result<OrderResponse>> MapToOrderResponse(OrderDetails orderDetails)
     {
-        var products = await orderDetails.Products
-            .SelectAsync(async p => new ProductQuantityName(p.ProductId, p.Quantity,
-                await _productNameService.GetProductName(p.ProductId)));
+        var products = await orderDetails.Products.SelectAsync(async p => new ProductQuantityName(
+            p.ProductId,
+            p.Quantity,
+            await _productNameService.GetProductName(p.ProductId)
+        ));
 
-
-        OrderResponse orderResponse = new OrderResponse(orderDetails.Id, orderDetails.Status.ToString(),
-            orderDetails.Delivery, orderDetails.PaymentInformation, products.ToList());
+        OrderResponse orderResponse = new OrderResponse(
+            orderDetails.Id,
+            orderDetails.Status.ToString(),
+            orderDetails.Delivery,
+            orderDetails.PaymentInformation,
+            products.ToList()
+        );
         return orderResponse;
     }
 
@@ -78,8 +97,10 @@ public class CreateOrderService : ICreateOrderService
         return orderResponse.OrderId;
     }
 
-    private async Task<Result<OrderDetails>> ValidateFraudCheck(OrderDetails orderDetails,
-        CancellationToken cancellationToken)
+    private async Task<Result<OrderDetails>> ValidateFraudCheck(
+        OrderDetails orderDetails,
+        CancellationToken cancellationToken
+    )
     {
         //Simulation of fraud check validation
         return orderDetails;

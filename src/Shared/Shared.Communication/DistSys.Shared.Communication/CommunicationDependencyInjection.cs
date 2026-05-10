@@ -30,9 +30,11 @@ public static class CommunicationDependencyInjection
 
     private static void AddIntegrationBusPublisher(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<IIntegrationMessagePublisher, DefaultIntegrationMessagePublisher>();
+        serviceCollection.AddTransient<
+            IIntegrationMessagePublisher,
+            DefaultIntegrationMessagePublisher
+        >();
     }
-
 
     private static void AddDomainBusPublisher(this IServiceCollection serviceCollection)
     {

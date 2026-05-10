@@ -5,8 +5,11 @@ namespace Distribt.Shared.Setup.Databases;
 
 public static class MongoDb
 {
-    public static IServiceCollection AddDistribtMongoDbConnectionProvider(this IServiceCollection serviceCollection,
-        IConfiguration configuration, string name = "mongodb")
+    public static IServiceCollection AddDistribtMongoDbConnectionProvider(
+        this IServiceCollection serviceCollection,
+        IConfiguration configuration,
+        string name = "mongodb"
+    )
     {
         return serviceCollection
             .AddMongoDbConnectionProvider()

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Distribt.Services.Emails.Controllers;
+
 [ApiController]
 [Route("[controller]")]
 public class EmailController
@@ -14,4 +15,3 @@ public class EmailController
 }
 
 public record EmailDto(string from, string to, string subject, string body);
-

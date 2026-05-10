@@ -1,18 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <RootNamespace>DistSys.Shared.Databases.MySql</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>DistSys.Shared.Databases.MySql</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="6.0.2" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="6.0.2" />
+    <PackageReference
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="6.0.0"
+    />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
-      <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.0" />
+  </ItemGroup>
 
-    <Import Project="../../../../GlobalSettings.msbuild" />
+  <Import Project="../../../../GlobalSettings.msbuild" />
 </Project>
-

@@ -33,23 +33,31 @@ public class TestProductNameService
             ClientFactory = new Mock<IHttpClientFactory>();
             ServiceDiscovery = new Mock<IServiceDiscovery>();
 
-
-            Cache.Setup(a => a.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            Cache
+                .Setup(a => a.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(null as byte[]);
 
-            ProductRepository.Setup(a => a.GetProductName(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            ProductRepository
+                .Setup(a => a.GetProductName(It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(null as string);
 
-            ServiceDiscovery.Setup(a =>
-                    a.GetFullAddress(DiscoveryServices.Microservices.ProductsApi.ApiRead,
-                        It.IsAny<CancellationToken>()))
+            ServiceDiscovery
+                .Setup(a =>
+                    a.GetFullAddress(
+                        DiscoveryServices.Microservices.ProductsApi.ApiRead,
+                        It.IsAny<CancellationToken>()
+                    )
+                )
                 .ReturnsAsync("http://productApi");
 
-            Subject = new ProductNameService(ProductRepository.Object, Cache.Object, ClientFactory.Object,
-                ServiceDiscovery.Object);
+            Subject = new ProductNameService(
+                ProductRepository.Object,
+                Cache.Object,
+                ClientFactory.Object,
+                ServiceDiscovery.Object
+            );
         }
     }
-
 
     [Fact]
     public async Task WhenProductNameOnCache_ThenRetrieveFromCache()
@@ -58,17 +66,25 @@ public class TestProductNameService
         string expected = "returnedValue";
         TestState state = new TestState();
 
-        state.Cache.Setup(a => a.GetAsync($"ORDERS-PRODUCT::{id}", It.IsAny<CancellationToken>()))
+        state
+            .Cache.Setup(a => a.GetAsync($"ORDERS-PRODUCT::{id}", It.IsAny<CancellationToken>()))
             .ReturnsAsync(Encoding.ASCII.GetBytes(expected));
 
         string result = await state.Subject.GetProductName(id);
 
         Assert.Equal(expected, result);
-        state.Cache.Verify(a => a.GetAsync($"ORDERS-PRODUCT::{id}", It.IsAny<CancellationToken>()), Times.Once);
-        state.ProductRepository.Verify(a => a.GetProductName(It.IsAny<int>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-        state.ServiceDiscovery.Verify(a =>
-            a.GetFullAddress(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        state.Cache.Verify(
+            a => a.GetAsync($"ORDERS-PRODUCT::{id}", It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        state.ProductRepository.Verify(
+            a => a.GetProductName(It.IsAny<int>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        state.ServiceDiscovery.Verify(
+            a => a.GetFullAddress(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -77,16 +93,25 @@ public class TestProductNameService
         int id = 1;
         string expected = "returnedValue";
         TestState state = new TestState();
-        state.ProductRepository.Setup(a => a.GetProductName(id, It.IsAny<CancellationToken>()))
+        state
+            .ProductRepository.Setup(a => a.GetProductName(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
         string result = await state.Subject.GetProductName(id);
 
         Assert.Equal(expected, result);
-        state.Cache.Verify(a => a.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-        state.ProductRepository.Verify(a => a.GetProductName(id, It.IsAny<CancellationToken>()), Times.Once);
-        state.ServiceDiscovery.Verify(a =>
-            a.GetFullAddress(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        state.Cache.Verify(
+            a => a.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        state.ProductRepository.Verify(
+            a => a.GetProductName(id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        state.ServiceDiscovery.Verify(
+            a => a.GetFullAddress(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -96,26 +121,42 @@ public class TestProductNameService
         string expected = "returnedValue";
         TestState state = new TestState();
 
-        state.ClientFactory.Setup(a => a.CreateClient(It.IsAny<string>()))
+        state
+            .ClientFactory.Setup(a => a.CreateClient(It.IsAny<string>()))
             .Returns(FakeHttpClient(id, expected));
 
         string result = await state.Subject.GetProductName(id);
 
         Assert.Equal(expected, result);
-        state.Cache.Verify(a => a.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-        state.ProductRepository.Verify(a => a.GetProductName(id, It.IsAny<CancellationToken>()), Times.Once);
-        state.ServiceDiscovery.Verify(a =>
-            a.GetFullAddress(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
-
-        state.ProductRepository.Verify(a => a.UpsertProductName(id, expected, It.IsAny<CancellationToken>()),
-            Times.Once);
         state.Cache.Verify(
-            a => a.SetAsync($"ORDERS-PRODUCT::{id}", Encoding.ASCII.GetBytes(expected),
-                It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()), Times.Once);
+            a => a.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        state.ProductRepository.Verify(
+            a => a.GetProductName(id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        state.ServiceDiscovery.Verify(
+            a => a.GetFullAddress(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+
+        state.ProductRepository.Verify(
+            a => a.UpsertProductName(id, expected, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        state.Cache.Verify(
+            a =>
+                a.SetAsync(
+                    $"ORDERS-PRODUCT::{id}",
+                    Encoding.ASCII.GetBytes(expected),
+                    It.IsAny<DistributedCacheEntryOptions>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
-
-    
     [Fact]
     public async Task WhenSetProductName_ThenUpsertInDbAndSetInCache()
     {
@@ -125,26 +166,46 @@ public class TestProductNameService
 
         await state.Subject.SetProductName(id, expected);
 
-        state.ProductRepository.Verify(a => a.UpsertProductName(id, expected, It.IsAny<CancellationToken>()),
-            Times.Once);
+        state.ProductRepository.Verify(
+            a => a.UpsertProductName(id, expected, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
         state.Cache.Verify(
-            a => a.SetAsync($"ORDERS-PRODUCT::{id}", Encoding.ASCII.GetBytes(expected),
-                It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()), Times.Once);
+            a =>
+                a.SetAsync(
+                    $"ORDERS-PRODUCT::{id}",
+                    Encoding.ASCII.GetBytes(expected),
+                    It.IsAny<DistributedCacheEntryOptions>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     private HttpClient FakeHttpClient(int id, string name)
     {
-        FullProductResponse productResponse = new FullProductResponse(id, new ProductDetails(name, "random"), 0, 0);
+        FullProductResponse productResponse = new FullProductResponse(
+            id,
+            new ProductDetails(name, "random"),
+            0,
+            0
+        );
 
         var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-        mockHttpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(productResponse))
-            });
+        mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(
+                new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(productResponse)),
+                }
+            );
 
         var client = new HttpClient(mockHttpMessageHandler.Object);
         return client;

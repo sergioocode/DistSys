@@ -12,7 +12,10 @@ public class ProductController
     private readonly IUpdateProductDetails _updateProductDetails;
     private readonly ICreateProductDetails _createProductDetails;
 
-    public ProductController(IUpdateProductDetails updateProductDetails, ICreateProductDetails createProductDetails)
+    public ProductController(
+        IUpdateProductDetails updateProductDetails,
+        ICreateProductDetails createProductDetails
+    )
     {
         _updateProductDetails = updateProductDetails;
         _createProductDetails = createProductDetails;
@@ -26,7 +29,6 @@ public class ProductController
 
         return result.Success().UseSuccessHttpStatusCode(HttpStatusCode.Created).ToActionResult();
     }
-
 
     [HttpPut("updateproductdetails/{id}")]
     [ProducesResponseType(typeof(ResultDto<bool>), (int)HttpStatusCode.OK)]

@@ -19,30 +19,25 @@ public static class DynamicExtensions
         return PrivateReflectionDynamicObject.WrapObjectIfNeeded(o);
     }
 
-     internal class PrivateReflectionDynamicObject : DynamicObject
+    internal class PrivateReflectionDynamicObject : DynamicObject
     {
-        private const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private const BindingFlags bindingFlags =
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        private static IDictionary<Type, IDictionary<string, IProperty>> _propertiesOnType = new ConcurrentDictionary<Type, IDictionary<string, IProperty>>();
+        private static IDictionary<Type, IDictionary<string, IProperty>> _propertiesOnType =
+            new ConcurrentDictionary<Type, IDictionary<string, IProperty>>();
 
         // Simple abstraction to make field and property access consistent
         interface IProperty
         {
-            string Name
-            {
-                get;
-            }
+            string Name { get; }
 
             object GetValue(object obj, object[] index);
 
             void SetValue(object obj, object val, object[] index);
         }
 
-        private object RealObject
-        {
-            get;
-            set;
-        }
+        private object RealObject { get; set; }
 
         public override string ToString()
         {
@@ -81,7 +76,11 @@ public static class DynamicExtensions
         }
 
         // Called when a method is called
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        public override bool TryInvokeMember(
+            InvokeMemberBinder binder,
+            object[] args,
+            out object result
+        )
         {
             result = InvokeMemberOnType(RealObject.GetType(), RealObject, binder.Name, args);
 
@@ -117,10 +116,7 @@ public static class DynamicExtensions
                 return o;
             }
 
-            return new PrivateReflectionDynamicObject()
-            {
-                RealObject = o
-            };
+            return new PrivateReflectionDynamicObject() { RealObject = o };
         }
 
         private static IDictionary<string, IProperty> GetTypeProperties(Type type)
@@ -137,21 +133,20 @@ public static class DynamicExtensions
             typeProperties = new ConcurrentDictionary<string, IProperty>();
 
             // First, add all the properties
-            foreach (PropertyInfo prop in type.GetProperties(bindingFlags).Where(p => p.DeclaringType == type))
+            foreach (
+                PropertyInfo prop in type.GetProperties(bindingFlags)
+                    .Where(p => p.DeclaringType == type)
+            )
             {
-                typeProperties[prop.Name] = new Property()
-                {
-                    PropertyInfo = prop
-                };
+                typeProperties[prop.Name] = new Property() { PropertyInfo = prop };
             }
 
             // Now, add all the fields
-            foreach (FieldInfo field in type.GetFields(bindingFlags).Where(p => p.DeclaringType == type))
+            foreach (
+                FieldInfo field in type.GetFields(bindingFlags).Where(p => p.DeclaringType == type)
+            )
             {
-                typeProperties[field.Name] = new Field()
-                {
-                    FieldInfo = field
-                };
+                typeProperties[field.Name] = new Field() { FieldInfo = field };
             }
 
             // Finally, recurse on the base class to add its fields
@@ -169,17 +164,23 @@ public static class DynamicExtensions
             return typeProperties;
         }
 
-        private static object InvokeMemberOnType(Type type, object target, string name, object[] args)
+        private static object InvokeMemberOnType(
+            Type type,
+            object target,
+            string name,
+            object[] args
+        )
         {
             try
             {
                 // Try to invoke the method
                 return type.InvokeMember(
-                           name,
-                           BindingFlags.InvokeMethod | bindingFlags,
-                           null,
-                           target,
-                           args);
+                    name,
+                    BindingFlags.InvokeMethod | bindingFlags,
+                    null,
+                    target,
+                    args
+                );
             }
             catch (MissingMethodException)
             {
@@ -219,8 +220,11 @@ public static class DynamicExtensions
             throw new ArgumentException(
                 string.Format(
                     "The property {0} doesn't exist on type {1}. Supported properties are: {2}",
-                    propertyName, RealObject.GetType(),
-                    string.Join(",", propNames)));
+                    propertyName,
+                    RealObject.GetType(),
+                    string.Join(",", propNames)
+                )
+            );
         }
 
         // IProperty implementation over a FieldInfo
@@ -228,17 +232,10 @@ public static class DynamicExtensions
         {
             string IProperty.Name
             {
-                get
-                {
-                    return FieldInfo.Name;
-                }
+                get { return FieldInfo.Name; }
             }
 
-            internal FieldInfo FieldInfo
-            {
-                get;
-                set;
-            }
+            internal FieldInfo FieldInfo { get; set; }
 
             object IProperty.GetValue(object obj, object[] index)
             {
@@ -256,17 +253,10 @@ public static class DynamicExtensions
         {
             string IProperty.Name
             {
-                get
-                {
-                    return PropertyInfo.Name;
-                }
+                get { return PropertyInfo.Name; }
             }
 
-            internal PropertyInfo PropertyInfo
-            {
-                get;
-                set;
-            }
+            internal PropertyInfo PropertyInfo { get; set; }
 
             object IProperty.GetValue(object obj, object[] index)
             {

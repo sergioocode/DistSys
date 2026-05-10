@@ -6,7 +6,10 @@ namespace Distribt.Services.Orders.Services;
 
 public interface IOrderDispatchedService
 {
-    Task<bool> Execute(Guid orderId, CancellationToken cancellationToken = default(CancellationToken));
+    Task<bool> Execute(
+        Guid orderId,
+        CancellationToken cancellationToken = default(CancellationToken)
+    );
 }
 
 public class OrderDispatchedService : IOrderDispatchedService
@@ -18,11 +21,12 @@ public class OrderDispatchedService : IOrderDispatchedService
         _orderRepository = orderRepository;
     }
 
-
-    public async Task<bool> Execute(Guid orderId, CancellationToken cancellationToken = default(CancellationToken))
-    { 
-        
-        OrderDetails orderDetails =  await _orderRepository.GetById(orderId, cancellationToken);
+    public async Task<bool> Execute(
+        Guid orderId,
+        CancellationToken cancellationToken = default(CancellationToken)
+    )
+    {
+        OrderDetails orderDetails = await _orderRepository.GetById(orderId, cancellationToken);
         orderDetails.Apply(new OrderDispatched());
         await _orderRepository.Save(orderDetails, cancellationToken);
         return true;

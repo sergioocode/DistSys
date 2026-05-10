@@ -14,7 +14,8 @@ public class DistribtRateLimiterPolicy : IRateLimiterPolicy<string>
             {
                 PermitLimit = 2,
                 Window = TimeSpan.FromMinutes(60),
-            });
+            }
+        );
     }
 
     public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected { get; } =

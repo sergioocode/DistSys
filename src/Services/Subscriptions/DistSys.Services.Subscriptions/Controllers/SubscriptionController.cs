@@ -30,4 +30,3 @@ public class SubscriptionController
         return true.Success().Async().ToActionResult();
     }
 }
-

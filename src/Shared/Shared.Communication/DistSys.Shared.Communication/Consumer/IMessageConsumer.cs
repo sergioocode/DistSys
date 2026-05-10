@@ -5,6 +5,4 @@ public interface IMessageConsumer
     Task StartAsync(CancellationToken cancelToken = default);
 }
 
-public interface IMessageConsumer<T> : IMessageConsumer
-{
-}
+public interface IMessageConsumer<T> : IMessageConsumer { }

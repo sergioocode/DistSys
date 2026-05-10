@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -20,6 +19,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Shared\DistSys.Shared.Discovery\DistSys.Shared.Discovery.csproj" />
   </ItemGroup>
-
 </Project>
-

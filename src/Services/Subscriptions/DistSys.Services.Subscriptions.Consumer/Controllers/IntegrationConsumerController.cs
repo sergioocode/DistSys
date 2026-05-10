@@ -8,7 +8,6 @@ namespace Distribt.Services.Subscriptions.Consumer.Controllers;
 [Route("[controller]")]
 public class IntegrationConsumerController : ConsumerController<IntegrationMessage>
 {
-    public IntegrationConsumerController(IConsumerManager<IntegrationMessage> consumerManager) : base(consumerManager)
-    {
-    }
+    public IntegrationConsumerController(IConsumerManager<IntegrationMessage> consumerManager)
+        : base(consumerManager) { }
 }

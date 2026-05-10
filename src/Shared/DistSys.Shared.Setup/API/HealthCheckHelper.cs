@@ -8,12 +8,10 @@ public static class HealthCheckHelper
     {
         var myConfiguration = new Dictionary<string, string?>
         {
-            {"HealthChecksUI:HealthChecks:0:Name", "self"},
-            {"HealthChecksUI:HealthChecks:0:Uri", "/health"},
+            { "HealthChecksUI:HealthChecks:0:Name", "self" },
+            { "HealthChecksUI:HealthChecks:0:Uri", "/health" },
         };
 
-        return new ConfigurationBuilder()
-            .AddInMemoryCollection(myConfiguration)
-            .Build();
+        return new ConfigurationBuilder().AddInMemoryCollection(myConfiguration).Build();
     }
 }
