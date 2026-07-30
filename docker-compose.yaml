@@ -1,0 +1,140 @@
+# version: "3.9"
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.34-management-alpine # Se necesita la versión management para disponer de interfaz de usuario
+    container_name: rabbitmq
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ./tools/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+        - ./tools/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+        - ./tools/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+  consul:
+    image: hashicorp/consul
+    container_name: consul
+    ports:
+      - 8500:8500 # Interfaz de usuario y llamadas a la API
+      - 8400:8400
+      - 8600:8600
+      - 8600:8600/udp
+  vault:
+    image: hashicorp/vault:1.21.4
+    container_name: vault
+    ports:
+      - 8200:8200
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+      # En producción no debe utilizarse este mecanismo de autenticación mediante token,
+      # ya que el token no puede almacenarse en el control de versiones.
+      VAULT_TOKEN: "vault-distsys-token" # Permite utilizar la CLI en desarrollo
+      VAULT_DEV_ROOT_TOKEN_ID: "vault-distsys-token"
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      - rabbitmq
+      - consul
+
+  #########################
+  # Configuración de Graylog #
+  #########################
+  # El contenedor debe llamarse mongo
+  mongo:
+    container_name: mongo_graylog
+    image: mongo:4.2
+  elasticsearch:
+    container_name: elasticserach_graylog
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+  graylog:
+    image: graylog/graylog:4.2.5
+    container_name: graylog
+    environment:
+      # Debe contener al menos 16 caracteres
+      - GRAYLOG_PASSWORD_SECRET=thispassshouldbeatleast16characters
+      # Contraseña: admin
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+    entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      - 9000:9000 # Interfaz web y API REST de Graylog
+      - 1514:1514
+      - 1514:1514/udp
+      - 12201:12201
+      - 12201:12201/udp
+  #############################
+  # Fin de la configuración de Graylog #
+  #############################
+  mongodb:
+    image: mongo:latest
+    container_name: MongoDb
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=distribtUser
+      - MONGO_INITDB_ROOT_PASSWORD=distribtPassword
+      - MONGO_INITDB_DATABASE=distribt
+    volumes:
+      - ./tools/mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  mysql:
+    image: mysql:8.0
+    container_name: MySql
+    environment:
+      MYSQL_DATABASE: 'distribt'
+      MYSQL_USER: 'distribtUser'
+      MYSQL_PASSWORD: 'distribtPassword'
+      MYSQL_ROOT_PASSWORD: 'distribtRootPassword'
+    ports:
+      # Normalmente sería 3306:3306, pero el puerto 3306 está ocupado en mi equipo.
+      - 3307:3306
+    volumes:
+      - ./tools/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+  opentelemetry-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: open_telemetry_collector
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./tools/telemetry/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./tools/telemetry/logs:/etc/output:rw # Almacena los logs (no se confirman en Git)
+    ports:
+      - "8888:8888"   # Métricas de Prometheus expuestas por el recopilador
+      - "8889:8889"   # Métricas del exportador de Prometheus
+      - "4317:4317"   # Receptor OTLP gRPC
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./tools/telemetry/prometheus.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./tools/telemetry/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/all.yaml
+    ports:
+      - 3000:3000
+  zipkin:
+    container_name: zipkin-traces
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
